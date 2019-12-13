@@ -51,16 +51,23 @@
  > send request map / array;
  
  first make List ;
+ 
  List header = ['id','name','something'];
+ 
  List value = [];
  
  for(var i = 0 < i < response.length;i++){
+ 
     value.add(response[i]['id']);
+ 
     value.add(response[i]['name']);
+ 
     value.add(response[i]['something']);
+ 
  }
  
  List singlehead = ['bank','note'];
+ 
  List singlevalue = ['12389712398723','my checkout'];
  
 parse List to Map <br>
@@ -78,6 +85,6 @@ send to server<br>
   - list = for many value,
   - value = value of list,
  functions :
- array() = for many value,
- withsinglearray = singgle array + many value include;
+ - array() = for many value,
+ - withsinglearray = singgle array + many value include;
  
