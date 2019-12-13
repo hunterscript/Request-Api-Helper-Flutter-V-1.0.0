@@ -84,7 +84,8 @@ send to server<br>
   - singlevalue = only 1 value;
   - list = for many value,
   - value = value of list,
- functions :
+  
+ Functions :
  - array() = for many value,
  - withsinglearray = singgle array + many value include;
  
