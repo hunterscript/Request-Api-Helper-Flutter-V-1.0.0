@@ -1,4 +1,4 @@
-# Request Api Helper Flutter V 1.0.0
+# Request Api Helper Flutter V 1.0.0 REV 2
  Helper Request Post , get , Map builder (Support Passport Laravel)
  
  > in dependendencies
