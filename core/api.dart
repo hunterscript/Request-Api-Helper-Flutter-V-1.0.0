@@ -2,36 +2,40 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:growtopia/core/session.dart';
+import 'session.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:io';
+import 'env.dart';
 
-String url = '';
-String noapiurl = '';
+// core login
 
-// Custom api / Laravel Passport
-String key = "";
-
-// Laravel Get Login Passport
-String clientsecret = '';
-String clientId = '';
-String grantType = 'password';
-
-class Login{
+class Auth{
   Session session = new Session();
-  final nama;
+  final username;
   final password;
-  Login({Key key , this.nama, this.password});
+  final name;
+  List getDataInt;
+  List getDataString;
+  List getDataBool;
+  List nameStringsession;
+  List dataStringsession;
+  List nameIntsession;
+  List dataIntsession;
+  List nameBoolsession;
+  List dataBoolsession;
+
+  Auth({Key key , this.nameStringsession, this.dataStringsession, this.nameIntsession, this.dataIntsession, this.nameBoolsession, this.dataBoolsession,this.name ,this.username, this.password , this.getDataInt , this.getDataBool , this.getDataString});
 
 
-  proses() async {
+  process() async {
+    Fluttertoast.showToast(msg:'Proses Login');
    try{
     final sendlogin = await http.post(noapiurl+'oauth/token', body: {
         'grant_type': grantType,
         'client_id': clientId,
         'client_secret': clientsecret,
-        "username": nama,
+        "username": username,
         "password": password,
       }, headers: {
         'Accept': 'application/json',
@@ -47,36 +51,99 @@ class Login{
           session.saveString('access_token', getresponse['access_token']);
           session.saveString('token_type', getresponse['token_type']);
         }
-      Fluttertoast.showToast(msg:'Berhasil Menyimpan Token');
-      await getuser();
-      return 'sukses';
+      Fluttertoast.showToast(msg:'Token saved');
+      // await getuser();
+      return 'success';
     }else{
       Fluttertoast.showToast(msg:'Error Code ${sendlogin.statusCode}');
-      return 'gagal';
+      return 'failure';
     }
    } on SocketException catch (_) {
       Fluttertoast.showToast(msg:'Connection Timed Out');
     } on TimeoutException catch (_){
       Fluttertoast.showToast(msg:'Request Timeout, try again');
     } catch (e) {
+      Fluttertoast.showToast(msg:'$e');
       // Fluttertoast.showToast(msg:e.toString(),
       //   position: ToastPosition.bottom,
       // );
     }
-    return 'ada yang aneh';
+    return 'Something Wrong';
   }
 
   getuser() async {
-    dynamic getresponse = await RequestGet(name: 'user').getdata();
+    dynamic getresponse = await RequestGet(name: name,customrequest: '').getdata();
     // print(getresponse['cm_name']);
     if(getresponse.length > 0 ){
-      session.saveString('cm_name', getresponse['cm_name']);
-      Fluttertoast.showToast(msg:'Login Telah Berhasil');
-      String nama = await session.getString('cm_name');
-      Fluttertoast.showToast(msg:'berhasil login $nama');
+      
+      if(nameStringsession != null){  
+        for(var i = 0; i < nameStringsession.length ; i++){
+          session.saveString(nameStringsession[i], getresponse[dataStringsession != null ? dataStringsession[i] : nameStringsession[i]]);
+        }
+      }
+      
+      if(nameIntsession != null){
+        for(var i = 0; i < nameIntsession.length ; i++){
+          session.saveInteger(nameIntsession[i], getresponse[dataIntsession != null ? dataIntsession[i] : nameIntsession[i]]);
+        }
+      }
+
+      if(nameBoolsession != null){
+        for(var i = 0; i < nameBoolsession.length ; i++){
+          session.saveBool(nameBoolsession[i], getresponse[dataBoolsession != null ? dataBoolsession[i] : nameBoolsession[i]]);
+        }
+      }
+
+      Fluttertoast.showToast(msg:'Login Success');
     }else{
-    Fluttertoast.showToast(msg:'Akun Anda Tidak Ditemukan');
+    Fluttertoast.showToast(msg:'Profile Not Found');
     }
+  }
+
+  savesession() async {
+    if(nameStringsession != null){  
+        for(var i = 0; i < nameStringsession.length ; i++){
+          session.saveString(nameStringsession[i], getresponse[dataStringsession != null ? dataStringsession[i] : nameStringsession[i]]);
+        }
+      }
+      
+      if(nameIntsession != null){
+        for(var i = 0; i < nameIntsession.length ; i++){
+          session.saveInteger(nameIntsession[i], getresponse[dataIntsession != null ? dataIntsession[i] : nameIntsession[i]]);
+        }
+      }
+
+      if(nameBoolsession != null){
+        for(var i = 0; i < nameBoolsession.length ; i++){
+          session.saveBool(nameBoolsession[i], getresponse[dataBoolsession != null ? dataBoolsession[i] : nameBoolsession[i]]);
+        }
+      }
+    
+    return Fluttertoast.showToast(msg:'Success Save');
+  }
+
+  getsession() async {
+    Map <String,dynamic> result = new Map();
+    if(getDataString != null){    
+      for(var i = 0 ; i < getDataString.length;i++){
+        result[getDataString[i]] = await session.getString(getDataString[i]);
+      }
+    }
+
+    if(getDataInt != null){
+      for(var i = 0 ; i < getDataInt.length;i++){
+        result[getDataInt[i]] = await session.getInteger(getDataInt[i]);
+      }
+    }
+
+    if(getDataBool != null){    
+      for(var i = 0 ; i < getDataBool.length;i++){
+        result[getDataBool[i]] = await session.getBool(getDataBool[i]);
+      }
+    }
+
+
+    return result;
   }
 }
 
@@ -90,16 +157,18 @@ class RequestGet{
   RequestGet({Key key , this.name , this.header , this.withbody , this.customrequest , this.customurl});
 
   getdata() async {
-    if(customurl != null || customurl != ''){
+
+    if(customurl != null && customurl != ''){
       url = customurl;
     }
+
 
     try{
       dynamic acc = await session.getString('token_type');
       dynamic auth = await  session.getString('access_token');
       String token = "$acc $auth" ;
       
-      final data = await http.get(url+name+customrequest,
+      final data = await http.get(url + name + customrequest,
         headers : {
           'Accept' : 'application/json',
           'Authorization' : token,
@@ -111,7 +180,7 @@ class RequestGet{
       return dataresponse;
     }else{
       Fluttertoast.showToast(msg:'Error Code ${data.statusCode}');
-      return 'gagal';
+      return 'failure';
     }
 
     } on SocketException catch (_) {
@@ -134,7 +203,7 @@ class RequestPost{
   String customurl;
   RequestPost({Key key , this.name , this.header,this.body,this.msg , this.customurl});
   sendrequest() async {
-    if(customurl != null || customurl != ''){
+    if(customurl != null && customurl != ''){
       url = customurl;
     }
 
@@ -173,12 +242,12 @@ class RequestPost{
 }
 
 class ArrayRequestSend{
-  var nama;
+  var name;
   var request;
   Map<String,dynamic> requestbody;
   var msg;
   var customurl;
-  ArrayRequestSend({Key key , this.nama , this.request, this.requestbody , this.msg , this.customurl});
+  ArrayRequestSend({Key key , this.name , this.request, this.requestbody , this.msg , this.customurl});
     senddata() async {
     if(customurl != '' || customurl != null){
       url = customurl;
@@ -189,7 +258,7 @@ class ArrayRequestSend{
       Dio dio = new Dio();
 
       Response sendpostapi = await dio.post(
-        url+nama,
+        url+name,
         data: requestbody,
       );
       
