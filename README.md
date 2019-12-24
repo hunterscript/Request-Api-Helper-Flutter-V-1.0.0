@@ -1,4 +1,4 @@
-# Request Api Helper Flutter V 1.0.0 REV 2
+# Request Api Helper Flutter V 1.0.1 REV 2
  Helper Request Post , get , Map builder (Support Passport Laravel)
  
  > in dependendencies
@@ -15,11 +15,84 @@
  
  import 'package:(your_name_project)/core/api.dart';
    
- in setting api.dart change :
+ in setting env.dart change :
   - url (yoururl.com/api/) 
   - clientsecret (for passport laravel);
+  - etc
  
   <hr>
+  
+ > Make Login Session Function;
+ - make function
+ 
+ signin() async {
+
+    // for return of API
+    
+    List sessionint = ['cm_id'];
+
+    // for return of API
+
+    List sessionString = ['cm_name','cm_code','cm_email','cm_nphone'];
+
+    // for title In SharedPreference type Integer
+
+    List headsessionint = ['id'];
+
+    // for title In SharedPreference type String
+  
+    List headsessionString = ['name','code','email','telepon'];
+
+    dynamic check = await Auth(name: 'user', username: 'alpha' , password: '123456' , nameStringsession: headsessionString, nameIntsession: headsessionint,dataStringsession: sessionString , dataIntsession: sessionint).process();
+
+    print(check);
+
+  }
+ 
+ > save Session data Easy
+ -create function
+ 
+ savepreference() async {
+
+    // value preference integer
+    
+    List sessionint = [1];
+    
+    // for title In SharedPreference type Integer
+
+    List headsessionint = ['id'];
+    
+    // value preference string
+ 
+    List sessionString = ['myname','mycode','myemail','myphone'];
+
+    // for title In SharedPreference type String
+  
+    List headsessionString = ['name','code','email','telepon'];
+
+    await Auth(nameStringsession: headsessionString, nameIntsession: headsessionint,dataStringsession: sessionString , dataIntsession: sessionint).savesession();
+
+  }
+ 
+ > get Session data Easy
+ - create function 
+ 
+ showaccount() async {
+    
+    // title of Shared Preference String
+    
+    List sessionString = ['name'];
+    
+    // title of Shared Preference Interger
+    
+    List sessionInt = ['id'];
+    
+    dynamic result = await Auth(getDataString:sessionString , getDataInt: sessionInt).getsession();
+    
+    print(result); 
+  
+  }
+  
  
  > send request get;
  
@@ -51,23 +124,16 @@
  > send request map / array;
  
  first make List ;
- 
  List header = ['id','name','something'];
- 
  List value = [];
  
  for(var i = 0 < i < response.length;i++){
- 
     value.add(response[i]['id']);
- 
     value.add(response[i]['name']);
- 
     value.add(response[i]['something']);
- 
  }
  
  List singlehead = ['bank','note'];
- 
  List singlevalue = ['12389712398723','my checkout'];
  
 parse List to Map <br>
@@ -76,7 +142,7 @@ Map<String,dynamic> parsemap = BuildArray(singlelist: singlehead , singlevalue: 
 
 send to server<br>
 
- await ArrayRequestSend(customurl: 'https://mywebsite/api/' ,nama: 'checkout/save',msg: "Checkout complete" , requestbody: parsemap).senddata();
+ await ArrayRequestSend(customurl: 'https://mywebsite/api/' ,name: 'checkout/save',msg: "Checkout complete" , requestbody: parsemap).senddata();
 
  
  Note options : 
@@ -84,8 +150,7 @@ send to server<br>
   - singlevalue = only 1 value;
   - list = for many value,
   - value = value of list,
-  
- Functions :
- - array() = for many value,
- - withsinglearray = singgle array + many value include;
+ functions :
+ array() = for many value,
+ withsinglearray = singgle array + many value include;
  
