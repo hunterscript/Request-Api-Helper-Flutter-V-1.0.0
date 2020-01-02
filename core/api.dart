@@ -28,7 +28,7 @@ class Auth{
   Auth({Key key , this.nameStringsession, this.dataStringsession, this.nameIntsession, this.dataIntsession, this.nameBoolsession, this.dataBoolsession,this.name ,this.username, this.password , this.getDataInt , this.getDataBool , this.getDataString});
 
 
-  process() async {
+  login() async {
     Fluttertoast.showToast(msg:'Proses Login');
    try{
     final sendlogin = await http.post(noapiurl+'oauth/token', body: {
@@ -45,15 +45,18 @@ class Auth{
     if(sendlogin.statusCode == 200){
       if (getresponse['error'] == 'invalid_credentials') {
           Fluttertoast.showToast(msg:getresponse['message']);
+          return 'error';
         } else if (getresponse['error'] == 'invalid_request') {
           Fluttertoast.showToast(msg:getresponse['hint']);
+          return 'error';
         } else if (getresponse['token_type'] == 'Bearer') {
           session.saveString('access_token', getresponse['access_token']);
           session.saveString('token_type', getresponse['token_type']);
+          Fluttertoast.showToast(msg:'Token saved');
+          return 'success';
         }
-      Fluttertoast.showToast(msg:'Token saved');
       // await getuser();
-      return 'success';
+      return 'error';
     }else{
       Fluttertoast.showToast(msg:'Error Code ${sendlogin.statusCode}');
       return 'failure';
@@ -69,6 +72,10 @@ class Auth{
       // );
     }
     return 'Something Wrong';
+  }
+
+  logout() async {
+    session.clear();
   }
 
   getuser() async {
@@ -156,10 +163,14 @@ class RequestGet{
   String customurl;
   RequestGet({Key key , this.name , this.header , this.withbody , this.customrequest , this.customurl});
 
-  getdata() async {
+  send() async {
 
     if(customurl != null && customurl != ''){
       url = customurl;
+    }
+    
+    if(customrequest == null){
+      customrequest == '';
     }
 
 
@@ -202,7 +213,7 @@ class RequestPost{
   final msg;
   String customurl;
   RequestPost({Key key , this.name , this.header,this.body,this.msg , this.customurl});
-  sendrequest() async {
+  send() async {
     if(customurl != null && customurl != ''){
       url = customurl;
     }
@@ -248,7 +259,7 @@ class ArrayRequestSend{
   var msg;
   var customurl;
   ArrayRequestSend({Key key , this.name , this.request, this.requestbody , this.msg , this.customurl});
-    senddata() async {
+    send() async {
     if(customurl != '' || customurl != null){
       url = customurl;
     }
