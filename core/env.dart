@@ -1,4 +1,4 @@
-String url = '';
+String urls = '';
 String noapiurl = '';
 
 // Custom api / Laravel Passport
