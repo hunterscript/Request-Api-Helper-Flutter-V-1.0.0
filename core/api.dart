@@ -110,19 +110,19 @@ class Auth{
   savesession() async {
     if(nameStringsession != null){  
         for(var i = 0; i < nameStringsession.length ; i++){
-          session.saveString(nameStringsession[i], dataStringsession != null ? dataStringsession[i] : nameStringsession[i]);
+          session.saveString(nameStringsession[i], dataStringsession[i] != null ? dataStringsession[i] : nameStringsession[i]);
         }
       }
       
       if(nameIntsession != null){
         for(var i = 0; i < nameIntsession.length ; i++){
-          session.saveInteger(nameIntsession[i],dataIntsession != null ? dataIntsession[i] : nameIntsession[i]);
+          session.saveInteger(nameIntsession[i],dataIntsession[i] != null ? dataIntsession[i] : nameIntsession[i]);
         }
       }
 
       if(nameBoolsession != null){
         for(var i = 0; i < nameBoolsession.length ; i++){
-          session.saveBool(nameBoolsession[i], dataBoolsession != null ? dataBoolsession[i] : nameBoolsession[i]);
+          session.saveBool(nameBoolsession[i], dataBoolsession[i]!= null ? dataBoolsession[i] : nameBoolsession[i]);
         }
       }
     
