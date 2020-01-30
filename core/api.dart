@@ -9,7 +9,6 @@ import 'dart:io';
 import 'env.dart';
 
 // core login
-
 class Auth{
   Session session = new Session();
   final username;
@@ -253,31 +252,44 @@ class RequestPost{
 }
 
 class ArrayRequestSend{
+  Session session = new Session();
   var name;
   var request;
   Map<String,dynamic> requestbody;
   var msg;
   var customurl;
+  
   ArrayRequestSend({Key key , this.name , this.request, this.requestbody , this.msg , this.customurl});
     send() async {
-    if(customurl != '' || customurl != null){
-      urls = customurl;
+      Map<String, String> requestHeaders = Map();
+      dynamic acc = await session.getString('token_type');
+      dynamic auth = await  session.getString('access_token');
+      String token = "$acc $auth" ;
+
+      requestHeaders['Accept'] = 'application/json';
+      requestHeaders['Authorization'] = token;
+
+    if(customurl != null && customurl != ''){
+      diourls = customurl;
     }
+    
     // Map data;
-    try {
-
-      Dio dio = new Dio();
-
+    Dio dio = new Dio();
       Response sendpostapi = await dio.post(
-        urls+name,
-        data: requestbody,
+        diourls+name,
+        data: FormData.fromMap(requestbody),
+        options: Options(
+          headers: requestHeaders,
+        ),
       );
-      
+      print(sendpostapi.data.toString());
+
+    try {
       print(sendpostapi.statusCode.toString());
       if (sendpostapi.statusCode == 200) {
-        dynamic sendpostapiJson = sendpostapi.statusMessage;
+        // dynamic sendpostapiJson = sendpostapi.statusMessage;
         // Fluttertoast.showToast(msg:"from response $sendpostapiJson, ${sendpostapi.data}");
-        Fluttertoast.showToast(msg:sendpostapiJson);
+        // Fluttertoast.showToast(msg:sendpostapiJson);
         if(msg != null){
           Fluttertoast.showToast(msg:msg);
         }
@@ -293,7 +305,8 @@ class ArrayRequestSend{
     } on DioError catch (e) {
       Fluttertoast.showToast(msg:e.toString());
     } catch (e) {
-      Fluttertoast.showToast(msg:e.toString());
+      // Fluttertoast.showToast(msg:e.toString());
+      print(sendpostapi.statusMessage);
     }
   }
 }
